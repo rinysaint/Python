@@ -12,7 +12,18 @@ SECRET_KEY = 'Z7UuZfCE9E49IVbpDbpbHnEDbeb1aLlr'
 client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 
 pdfpath = 'E:\PYWorkSpaces\pdftoword'
-pdfname = '0419.pdf'
+pdfname = '广发智慧园区技术需求书202107060843.pdf'
+
+
+image_path = pdfpath + os.sep + "images"
+if not os.path.exists(image_path):
+    os.mkdir(image_path)
+image_path = image_path + os.sep + "JPEG"
+if not os.path.exists(image_path):
+    os.mkdir(image_path)
+image_path = image_path + os.sep + pdfname[:-4]
+if not os.path.exists(image_path):
+    os.mkdir(image_path)
 
 
 # 将每页pdf转为png格式图片
@@ -25,7 +36,7 @@ def pdf_image():
         # 获得每一页的流对象
         pm = page.getPixmap(matrix=trans, alpha=False)
         # 保存图片
-        pm.writeImage(image_path + os.sep + pdfname[:-4] + '_' + '{:0>3d}.jgp'.format(pg + 1))
+        pm.writeImage(image_path + os.sep + pdfname[:-4] + '_' + '{:0>3d}.jpeg'.format(pg + 1))
     page_range = range(pdf.pageCount)
     pdf.close()
     return page_range
@@ -40,11 +51,12 @@ def read_png_str(page_range):
 
     allPngStr = []
     image_list = []
-    for page_num in range(70,80):
+    for page_num in range(0,page_range):
         # 读取本地图片
-        image = get_file_content(image_path + 's' + os.sep + 'JPEG\\' + r'{}_{}.jpg'.format(pdfname[:-4], '%03d' % (page_num + 1)))
-        print(image)
-        image_list.append(image)
+        if os.path.exists(image_path + os.sep + r'{}_{}.jpeg'.format(pdfname[:-4], '%03d' % (page_num + 1))):
+            image = get_file_content(image_path + os.sep + r'{}_{}.jpeg'.format(pdfname[:-4], '%03d' % (page_num + 1)))
+            print(image)
+            image_list.append(image)
 
     # 新建一个AipOcr
     client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
@@ -70,16 +82,14 @@ def str2word(allPngStr):
     document = Document()
     for i in allPngStr:
         document.add_paragraph(
-            i, style='ListBullet'
+            i, style='List Bullet'
         )
-        document.save(pdfpath + os.sep + pdfname[:-4] + '.docx')
+        if not os.path.exists(pdfpath + os.sep + "docs"):
+            os.mkdir(pdfpath + os.sep + "docs")
+        document.save(pdfpath + os.sep + "docs" + os.sep + pdfname[:-4] + '.docx')
     print('处理完成')
 
 
-image_path = pdfpath + os.sep + "image"
-if not os.path.exists(image_path):
-    os.mkdir(image_path)
-
-# range_count = pdf_image()
-allPngStr = read_png_str(80)
+range_count = pdf_image()
+allPngStr = read_png_str(60)
 str2word(allPngStr)
