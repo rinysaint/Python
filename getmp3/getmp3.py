@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # MP3源地址url
     url = 'https://mp32.9ku.com/upload/128/2020/04/17/1003659.mp3'
     # MP3保存文件夹
-    save_url='D:/music/'
+    save_url='E:/PYWorkSpaces/getmp3/musics/'
     # MP3文件名
     file_name = '少年.mp3'
     DownloadFile(url,save_url, file_name)
